@@ -1,0 +1,24 @@
+/* Colors */
+$primary: #fafafa;
+$secondary: #1a73e8;
+$darkSecondary: #1b3a57;
+$success: #00bfa5;
+$error: #ff5252;
+$dropShadow: $darkSecondary;
+$dropShadowOpacity: 20%;
+
+/* Fonts */
+$font-type: "Google Sans", "Roboto", sans-serif;
+$font-title: "Google Sans Mono", "Courier New", serif;
+$font-color: $darkSecondary;
+
+:export {
+  primaryColor: $primary;
+  secondaryColor: $secondary;
+  tertiaryColor: $darkSecondary;
+  successColor: $success;
+  errorColor: $error;
+  fontColor: $font-color;
+  fontTitle: $font-title;
+  fontDefault: $font-type;
+}
