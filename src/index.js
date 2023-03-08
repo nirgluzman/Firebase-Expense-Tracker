@@ -8,9 +8,13 @@ import "./styles/firebaseui-styling.global.scss";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./styles/theme";
 
+import { AuthUserProvider } from "./context/auth";
+
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
-  <ThemeProvider theme={theme}>
-    <App />
-  </ThemeProvider>
+  <AuthUserProvider>
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
+  </AuthUserProvider>
 );
