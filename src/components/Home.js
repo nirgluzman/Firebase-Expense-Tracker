@@ -11,7 +11,7 @@ import {
 
 import styles from "../styles/landing.module.scss";
 
-import { useAuth } from "../context/auth";
+import { useAuth } from "../firebase/auth";
 import { auth } from "../firebase-config";
 import { EmailAuthProvider, GoogleAuthProvider } from "firebase/auth";
 import { StyledFirebaseAuth } from "react-firebaseui";

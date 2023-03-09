@@ -21,7 +21,7 @@ import AddIcon from "@mui/icons-material/Add";
 import NavBar from "./NavBar";
 import ExpenseDialog from "./ExpenseDialog";
 
-import { useAuth } from "../context/auth";
+import { useAuth } from "../firebase/auth";
 
 const ADD_SUCCESS = "Receipt was successfully added!";
 const ADD_ERROR = "Receipt was not successfully added!";

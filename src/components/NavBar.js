@@ -10,7 +10,7 @@ import {
 
 import styles from "../styles/navbar.module.scss";
 
-import { useAuth } from "../context/auth";
+import { useAuth } from "../firebase/auth";
 
 export default function NavBar() {
   const { authUser, signOut } = useAuth();

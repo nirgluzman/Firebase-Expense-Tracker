@@ -9,7 +9,7 @@ import "./styles/firebaseui-styling.global.scss";
 import { ThemeProvider } from "@mui/material/styles";
 import { theme } from "./styles/theme";
 
-import { AuthUserProvider } from "./context/auth";
+import { AuthUserProvider } from "./firebase/auth";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
