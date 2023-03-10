@@ -13,14 +13,16 @@ import {
 
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import enGB from "date-fns/locale/en-GB";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
 import styles from "../styles/expenseDialog.module.scss";
 
 import { useAuth } from "../firebase/auth";
-import { uploadImage } from "../firebase/storage";
+import { uploadImage, replaceImage } from "../firebase/storage";
 
 import { RECEIPTS_ENUM } from "./Dashboard";
+import { addReceipt, updateReceipt } from "../firebase/firestore";
 
 const DEFAULT_FILE_NAME = "No file selected";
 
@@ -94,12 +96,44 @@ export default function ExpenseDialog(props) {
     setIsSubmitting(true);
 
     try {
-      await uploadImage(formFields.file, authUser.uid);
-      props.onSuccess(RECEIPTS_ENUM.add);
-    } catch (error) {
-      props.onError(RECEIPTS_ENUM.add);
-    }
+      if (isEdit) {
+        // Check whether image was changed - fileName will be not null
+        if (formFields.fileName) {
+          // Store image into Storage
+          await replaceImage(formFields.file, formFields.imageBucket);
+        }
+        await updateReceipt(
+          formFields.id,
+          authUser.uid,
+          formFields.date,
+          formFields.locationName,
+          formFields.address,
+          formFields.items,
+          formFields.amount,
+          formFields.imageBucket
+        );
+      } else {
+        // Adding receipt
+        // Store image into Storage
+        const bucket = await uploadImage(formFields.file, authUser.uid);
 
+        // Store data into Firestore
+        await addReceipt(
+          authUser.uid,
+          formFields.date,
+          formFields.locationName,
+          formFields.address,
+          formFields.items,
+          formFields.amount,
+          bucket
+        );
+      }
+      props.onSuccess(isEdit ? RECEIPTS_ENUM.edit : RECEIPTS_ENUM.add);
+    } catch (error) {
+      props.onError(isEdit ? RECEIPTS_ENUM.edit : RECEIPTS_ENUM.add);
+      console.log(error);
+    }
+    // Clear all form data
     closeDialog();
   };
 
@@ -135,7 +169,10 @@ export default function ExpenseDialog(props) {
           <Typography>{formFields.fileName}</Typography>
         </Stack>
         <Stack>
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider
+            dateAdapter={AdapterDateFns}
+            adapterLocale={enGB}
+          >
             <DatePicker
               label="Date"
               value={formFields.date}
