@@ -1,0 +1,8 @@
+{
+  "projects": {
+    "default": "expense-tracker-5c6c8",
+    "staging": "expense-tracker-5c6c8"
+  },
+  "targets": {},
+  "etags": {}
+}

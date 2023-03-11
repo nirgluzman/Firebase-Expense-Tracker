@@ -66,6 +66,8 @@ export default function Dashboard() {
   const [deleteReceiptId, setDeleteReceiptId] = useState("");
   const [deleteReceiptImageBucket, setDeleteReceiptImageBucket] = useState("");
   const [receipts, setReceipts] = useState([]);
+  const [pastReceipts, setPastReceipts] = useState([]);
+  const [toConfirmReceipts, setToConfirmReceipts] = useState([]);
   const [updateReceipt, setUpdateReceipt] = useState({});
 
   // State involved in snackbar
@@ -91,14 +93,17 @@ export default function Dashboard() {
 
   // Get receipts once user is logged in (with real-time updates)
   useEffect(() => {
-    if (authUser) {
-      const unsubscribe = getReceipts(
-        authUser.uid,
-        setReceipts,
-        setIsLoadingReceipts
-      );
-      return () => unsubscribe();
-    }
+    const getAllReceipts = async () => {
+      if (authUser) {
+        const unsubscribe = await getReceipts(
+          authUser.uid,
+          setReceipts,
+          setIsLoadingReceipts
+        );
+        return () => unsubscribe();
+      }
+    };
+    getAllReceipts();
   }, [authUser]);
 
   // For all of the onClick functions, update the action and fields for updating
@@ -137,7 +142,32 @@ export default function Dashboard() {
     onResult(RECEIPTS_ENUM.delete, isSucceed);
   };
 
-  return !authUser ? (
+  const getReceiptRows = (isConfirmedReceipts) => {
+    const receipts = isConfirmedReceipts ? toConfirmReceipts : pastReceipts;
+    const zeroStateText = isConfirmedReceipts
+      ? "No receipts to confirm"
+      : "No past receipts";
+    const actionEnum = isConfirmedReceipts
+      ? RECEIPTS_ENUM.confirm
+      : RECEIPTS_ENUM.edit;
+    return receipts.length > 0 ? (
+      receipts.map((receipt) => (
+        <div key={receipt.id}>
+          <Divider light />
+          <ReceiptRow
+            toConfirm={isConfirmedReceipts}
+            receipt={receipt}
+            onEdit={() => onUpdate(receipt, actionEnum)}
+            onDelete={() => onClickDelete(receipt.id, receipt.imageBucket)}
+          />
+        </div>
+      ))
+    ) : (
+      <Typography variant="h5">{zeroStateText}</Typography>
+    );
+  };
+
+  return !authUser || isLoadingReceipts ? (
     <CircularProgress
       color="inherit"
       sx={{ marginLeft: "50%", marginTop: "25%" }}
@@ -171,6 +201,15 @@ export default function Dashboard() {
             variant="h4"
             sx={{ lineHeight: 2, paddingRight: "0.5em" }}
           >
+            NEED CONFIRMATION
+          </Typography>
+        </Stack>
+        {getReceiptRows(true)}
+        <Stack direction="row" sx={{ paddingTop: "1.5em" }}>
+          <Typography
+            variant="h4"
+            sx={{ lineHeight: 2, paddingRight: "0.5em" }}
+          >
             EXPENSES
           </Typography>
           <IconButton
@@ -182,7 +221,8 @@ export default function Dashboard() {
             <AddIcon />
           </IconButton>
         </Stack>
-        {receipts.map((receipt) => (
+        {getReceiptRows(false)}
+        {/* {receipts.map((receipt) => (
           <div key={receipt.id}>
             <Divider light />
             <ReceiptRow
@@ -191,7 +231,7 @@ export default function Dashboard() {
               onDelete={() => onClickDelete(receipt.id, receipt.imageBucket)}
             />
           </div>
-        ))}
+        ))} */}
       </Container>
       <ExpenseDialog
         edit={updateReceipt}

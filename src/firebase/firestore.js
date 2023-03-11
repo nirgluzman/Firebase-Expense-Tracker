@@ -97,7 +97,8 @@ export async function updateReceipt(
   address,
   items,
   amount,
-  imageBucket
+  imageBucket,
+  isConfirmed
 ) {
   // overwrites the document with the newly provided data
   await setDoc(doc(db, RECEIPT_COLLECTION, docId), {
@@ -108,6 +109,7 @@ export async function updateReceipt(
     items,
     amount,
     imageBucket,
+    isConfirmed,
   });
 }
 
